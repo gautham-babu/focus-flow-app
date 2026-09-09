@@ -1,10 +1,55 @@
-.app-container {
-  max-width: 600px;
-  margin: 40px auto;
-  font-family: sans-serif;
-  padding: 20px;
+/* --- Global Layout --- */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+.main-container {
+  flex: 1;
+  padding: 30px 5%;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* --- Top Navbar --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 15px 5%;
+  border-bottom: 1px solid #f1f5f9;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  color: #166534;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #166534;
+}
+
+/* --- Tasks & Forms --- */
 .task-form {
   display: flex;
   gap: 10px;
@@ -36,7 +81,7 @@
 .task-item {
   background: #f9f9f9;
   padding: 10px 15px;
-  marginBottom: 8px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
 }
@@ -46,6 +91,7 @@
   color: #666;
 }
 
+/* --- Timer & Session --- */
 .timer-card {
   background: #fff;
   padding: 20px;
@@ -128,6 +174,7 @@
   margin-bottom: 10px;
 }
 
+/* --- Analytics & Filters --- */
 .analytics-card {
   background: #fff;
   padding: 20px;
@@ -193,39 +240,13 @@
   text-transform: uppercase;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #2c3e50;
-  padding: 15px 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-}
-
-.navbar-brand {
-  color: white;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.navbar-links {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-link {
-  color: #ecf0f1;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.nav-link:hover {
-  color: #3498db;
-}
-
+/* --- Utilities --- */
 .mt-15 {
   margin-top: 15px;
+}
+
+.mt-30 {
+  margin-top: 30px;
 }
 
 .task-item-high {
@@ -241,10 +262,6 @@
   margin-bottom: 20px;
 }
 
-.mt-30 {
-  margin-top: 30px;
-}
-
 .quick-actions-flex {
   display: flex;
   gap: 15px;
@@ -256,7 +273,23 @@
   border-radius: 4px;
 }
 
-/* Dashboard Layout */
+.w-30 {
+  width: 30%;
+}
+
+.w-40 {
+  width: 40%;
+}
+
+.w-60 {
+  width: 60%;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+/* --- Dashboard Layout --- */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -281,7 +314,7 @@
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
@@ -296,7 +329,7 @@
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .timer-large {
@@ -351,7 +384,17 @@
   border-radius: 4px;
 }
 
-.w-30 { width: 30%; }
-.w-40 { width: 40%; }
-.w-60 { width: 60%; }
-.w-70 { width: 70%; }
+.timer-btn.stop {
+  background: #e74c3c; /* Red color */
+  color: white;
+}
+
+.timer-btn.stop:hover {
+  background: #c0392b;
+}
+
+.history-container {
+  margin-top: 30px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
+}

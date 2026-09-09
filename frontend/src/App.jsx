@@ -9,14 +9,16 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <div className="app-container">
+      <div className="app-wrapper">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/timer" element={<TimerPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/analytics" element={<AnalyticsPage />} />
-        </Routes>
+        <main className="main-container">
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/timer" element={<TimerPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );

@@ -5,7 +5,6 @@ export default function TimerPage() {
     return (
         <div>
             <PomodoroTimer />
-            <SessionLogger />
         </div>
     );
 }

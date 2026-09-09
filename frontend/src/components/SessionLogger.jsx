@@ -21,7 +21,7 @@ export default function SessionLogger() {
     };
 
     return (
-        <div className="session-card">
+        <div className="ui-card session-card">
             <h2>Log Focus Session</h2>
             <form onSubmit={handleSubmit} className="session-form">
                 <input
@@ -30,25 +30,27 @@ export default function SessionLogger() {
                     value={distraction}
                     onChange={(e) => setDistraction(e.target.value)}
                     className="task-input"
+                    style={{ border: '1px solid #cbd5e1', borderRadius: '4px' }}
                 />
                 <div className="rating-row">
                     <label className="rating-label">Productive Rating (1-10):</label>
-                    <select value={rating} onChange={(e) => setRating(e.target.value)} className="task-select">
+                    <select value={rating} onChange={(e) => setRating(e.target.value)} className="task-select" style={{ border: '1px solid #cbd5e1', borderRadius: '4px' }}>
                         {[...Array(10)].map((_, i) => (
                             <option key={i + 1} value={i + 1}>{i + 1}</option>
                         ))}
                     </select>
                 </div>
-                <button type="submit" className="timer-btn start session-submit-btn">Log Session</button>
+                <button type="submit" className="timer-btn start session-submit-btn" style={{ borderRadius: '4px' }}>Log Session</button>
             </form>
 
+            {/* History sits right below the form */}
             {logs.length > 0 && (
-                <div className="logs-container">
-                    <h3 className="logs-title">Recent Session Logs:</h3>
+                <div className="logs-container" style={{ marginTop: '30px', borderTop: '1px solid #f1f5f9', paddingTop: '15px' }}>
+                    <h3 className="logs-title">Session History</h3>
                     <ul className="task-list">
                         {logs.map(log => (
-                            <li key={log.id} className="task-item">
-                                <span>Distraction: {log.distraction}</span>
+                            <li key={log.id} className="clean-task-item">
+                                <span>Distraction: <strong>{log.distraction}</strong></span>
                                 <span className="task-meta">Rating: {log.rating}/10</span>
                             </li>
                         ))}
