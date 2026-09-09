@@ -1,16 +1,3 @@
-/* --- Global Layout & Reset --- */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f1f5f9;
-  color: #0f172a;
-  -webkit-font-smoothing: antialiased;
-}
-
 .app-wrapper {
   display: flex;
   flex-direction: column;
@@ -108,10 +95,6 @@ body {
 
 /* --- Shared Cards & Surfaces --- */
 .ui-card,
-.timer-card,
-.session-card,
-.analytics-card,
-.dashboard-card,
 .panel-card,
 .kpi-card {
   background: #ffffff;
@@ -377,12 +360,6 @@ body {
 }
 
 /* --- Forms & Controls --- */
-.task-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
 .task-input,
 .task-select {
   padding: 9px 12px;
@@ -399,8 +376,7 @@ body {
   border-color: #3b82f6;
 }
 
-.btn-primary,
-.task-button {
+.btn-primary {
   background: #2563eb;
   color: #ffffff;
   padding: 9px 18px;
@@ -413,8 +389,7 @@ body {
   transition: background-color 0.15s ease;
 }
 
-.btn-primary:hover,
-.task-button:hover {
+.btn-primary:hover {
   background: #1d4ed8;
 }
 
@@ -577,104 +552,40 @@ body {
   flex-shrink: 0;
 }
 
-/* --- Pomodoro Timer Components (Legacy and Fallbacks) --- */
-.timer-card {
-  padding: 32px 24px;
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto 30px auto;
-}
-
-.timer-display {
-  font-size: 3.5rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 20px 0;
-  color: #e05638;
-}
-
-.timer-buttons {
+.task-item-actions {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.timer-btn {
-  padding: 10px 22px;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: opacity 0.15s ease;
-}
-
-.timer-btn:hover {
-  opacity: 0.9;
-}
-
-.timer-btn.start {
-  background: #16a34a;
-}
-
-.timer-btn.pause {
-  background: #f59e0b;
-}
-
-.timer-btn.stop {
-  background: #ef4444;
-}
-
-.timer-btn.reset {
-  background: #64748b;
-}
-
-/* Session Reflection Form */
-.session-card {
-  padding: 24px;
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-
-.session-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 15px;
-}
-
-.rating-row {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
+.task-delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: #94a3b8;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.task-delete-btn:hover {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
+/* Session Reflection Modal */
 .rating-label {
   font-size: 0.9rem;
   color: #475569;
   font-weight: 500;
 }
 
-.history-container {
-  margin-top: 30px;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 20px;
-}
-
-.logs-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-/* --- Analytics & Simple Lists --- */
-.analytics-card {
-  padding: 24px;
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-
+/* --- Analytics Layout --- */
 .analytics-container {
   max-width: 1040px;
   margin: 0 auto;
@@ -708,45 +619,6 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
-}
-
-.stat-box {
-  background: #f8fafc;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-  border: 1px solid #e2e8f0;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #0f172a;
-  margin-top: 6px;
-}
-
-.stat-label {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.task-list-simple {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.task-list-simple li {
-  padding: 10px 0;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.task-meta {
-  font-size: 0.82rem;
-  color: #64748b;
 }
 
 /* Weekly Breakdown Bar Layout */
@@ -1040,9 +912,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* Utilities */
-.mt-15 { margin-top: 15px; }
-.mt-30 { margin-top: 30px; }
+
 
 /* ==========================================================================
    RESPONSIVE MEDIA QUERIES (Mobile & Tablet)
@@ -1194,8 +1064,13 @@ body {
     padding: 12px 10px;
   }
 
-  .task-item-date {
+  .task-item-actions {
     margin-left: 30px;
+    width: calc(100% - 30px);
+    justify-content: space-between;
+  }
+
+  .task-item-date {
     font-size: 0.75rem;
   }
 

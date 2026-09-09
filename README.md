@@ -124,6 +124,7 @@ The frontend application will run at `http://localhost:5173` (or the port specif
 | `GET` | `/tasks/` | Retrieves all tasks |
 | `POST` | `/tasks/` | Creates a new task |
 | `PATCH` | `/tasks/{task_id}/toggle` | Toggles the completion status of a task |
+| `DELETE` | `/tasks/{task_id}` | Deletes a task |
 
 ### Sessions
 | Method | Endpoint | Description |

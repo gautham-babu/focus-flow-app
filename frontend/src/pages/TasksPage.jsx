@@ -71,6 +71,18 @@ export default function TasksPage() {
         }
     };
 
+    const handleDeleteTask = async (taskId) => {
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/tasks/${taskId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) return;
+            setTasks((prev) => prev.filter((t) => t.id !== taskId));
+        } catch (err) {
+            console.error("Error deleting task:", err);
+        }
+    };
+
     const filteredTasks = tasks.filter((t) => {
         const matchesCategory = selectedCategory === 'All' || t.category === selectedCategory;
         const matchesPriority = selectedPriority === 'All' || t.priority === selectedPriority;
@@ -262,12 +274,34 @@ export default function TasksPage() {
                                         </div>
                                     </div>
                                 </div>
-
-                                {t.start_date && (
-                                    <div className="task-item-date">
-                                        {new Date(t.start_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                                    </div>
-                                )}
+                                <div className="task-item-actions">
+                                    {t.start_date && (
+                                        <span className="task-item-date">
+                                            {new Date(t.start_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                                        </span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        className="task-delete-btn"
+                                        onClick={() => handleDeleteTask(t.id)}
+                                        title="Delete task"
+                                        aria-label="Delete task"
+                                    >
+                                        <svg
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </li>
                         ))}
                     </ul>

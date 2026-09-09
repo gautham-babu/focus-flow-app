@@ -1,8 +1,7 @@
 from pydantic import BaseModel
-from datetime import date
+from datetime import datetime
 from typing import Optional
 
-# Base properties for a task
 class TaskBase(BaseModel):
     title: str
     estimated_time: str
@@ -11,13 +10,23 @@ class TaskBase(BaseModel):
     start_date: str
     completed: Optional[bool] = False
 
-# For creating a task - uses base properties
 class TaskCreate(TaskBase):
     pass
 
-# For returning a task - adds ID from database
 class TaskResponse(TaskBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+class SessionCreate(BaseModel):
+    duration: str
+    distraction: Optional[str] = ""
+    rating: int
+
+class SessionResponse(SessionCreate):
+    id: int
+    created_at: datetime
 
     class Config:
         from_attributes = True
