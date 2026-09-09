@@ -8,6 +8,8 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState('Medium');
+  const [category, setCategory] = useState('work');
+  const [filter, setFilter] = useState('All');
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/tasks/')
@@ -24,7 +26,7 @@ function App() {
       title,
       estimated_pomodoros: 1,
       priority,
-      category: 'work',
+      category,
       start_date: new Date().toISOString().split('T')[0]
     };
 
@@ -41,6 +43,11 @@ function App() {
       console.error("Error creating task:", err);
     }
   };
+
+  const filteredTasks = tasks.filter(task => {
+    if (filter === 'All') return true;
+    return task.category.toLowerCase() === filter.toLowerCase();
+  });
 
   return (
     <div className="app-container">
@@ -59,6 +66,11 @@ function App() {
           onChange={(e) => setTitle(e.target.value)}
           className="task-input"
         />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="task-select">
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="personal">Personal</option>
+        </select>
         <select value={priority} onChange={(e) => setPriority(e.target.value)} className="task-select">
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -67,15 +79,30 @@ function App() {
         <button type="submit" className="task-button">Add Task</button>
       </form>
 
-      <h2>Task List</h2>
+      <h2>Task Board</h2>
+      <div className="filter-container">
+        {['All', 'Work', 'Study', 'Personal'].map(cat => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`filter-btn ${filter === cat ? 'active' : ''}`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       <ul className="task-list">
-        {tasks.map(task => (
+        {filteredTasks.map(task => (
           <li
             key={task.id}
             className="task-item"
             style={{ borderLeft: `5px solid ${task.priority === 'High' ? '#e74c3c' : '#3498db'}` }}
           >
-            <span>{task.title}</span>
+            <div>
+              <span>{task.title}</span>
+              <span className="task-category-tag">{task.category}</span>
+            </div>
             <span className="task-meta">Priority: {task.priority}</span>
           </li>
         ))}
