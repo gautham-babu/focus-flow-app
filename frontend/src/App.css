@@ -44,3 +44,44 @@
   font-size: 0.85rem;
   color: #666;
 }
+
+.timer-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.timer-display {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 20px 0;
+  color: #e74c3c;
+}
+
+.timer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.timer-btn {
+  padding: 8px 16px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.timer-btn.start {
+  background: #2ecc71;
+}
+
+.timer-btn.pause {
+  background: #f39c12;
+}
+
+.timer-btn.reset {
+  background: #95a5a6;
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PomodoroTimer from './components/PomodoroTimer';
 import './App.css';
 
 function App() {
@@ -44,11 +45,13 @@ function App() {
       <h1>Focus Flow</h1>
       <p>A focused-work manager combining Pomodoro, task lists, and distraction logging.</p>
 
+      <PomodoroTimer />
+
       <form onSubmit={handleSubmit} className="task-form">
-        <input 
-          type="text" 
-          placeholder="What are you working on?" 
-          value={title} 
+        <input
+          type="text"
+          placeholder="What are you working on?"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="task-input"
         />
@@ -63,8 +66,8 @@ function App() {
       <h2>Task List</h2>
       <ul className="task-list">
         {tasks.map(task => (
-          <li 
-            key={task.id} 
+          <li
+            key={task.id}
             className="task-item"
             style={{ borderLeft: `5px solid ${task.priority === 'High' ? '#e74c3c' : '#3498db'}` }}
           >
