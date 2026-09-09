@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PomodoroTimer from './components/PomodoroTimer';
 import SessionLogger from './components/SessionLogger';
+import Analytics from './components/Analytics';
 import './App.css';
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
 
       <PomodoroTimer />
       <SessionLogger />
+      <Analytics />
 
       <form onSubmit={handleSubmit} className="task-form">
         <input
