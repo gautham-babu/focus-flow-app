@@ -1,0 +1,101 @@
+import { useState, useEffect } from 'react';
+
+export default function TasksPage() {
+    const [tasks, setTasks] = useState([]);
+    const [title, setTitle] = useState('');
+    const [priority, setPriority] = useState('Medium');
+    const [category, setCategory] = useState('work');
+    const [filter, setFilter] = useState('All');
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:8000/tasks/')
+            .then(res => res.json())
+            .then(data => setTasks(data))
+            .catch(err => console.error("Error fetching tasks:", err));
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!title.trim()) return;
+
+        const newTask = {
+            title,
+            estimated_pomodoros: 1,
+            priority,
+            category,
+            start_date: new Date().toISOString().split('T')[0]
+        };
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/tasks/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTask)
+            });
+            const data = await response.json();
+            setTasks([...tasks, data]);
+            setTitle('');
+        } catch (err) {
+            console.error("Error creating task:", err);
+        }
+    };
+
+    const filteredTasks = tasks.filter(task => {
+        if (filter === 'All') return true;
+        return task.category.toLowerCase() === filter.toLowerCase();
+    });
+
+    return (
+        <div>
+            <h2>Task Management</h2>
+            <form onSubmit={handleSubmit} className="task-form mt-15">
+                <input
+                    type="text"
+                    placeholder="What are you working on?"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="task-input"
+                />
+                <select value={category} onChange={(e) => setCategory(e.target.value)} className="task-select">
+                    <option value="work">Work</option>
+                    <option value="study">Study</option>
+                    <option value="personal">Personal</option>
+                </select>
+                <select value={priority} onChange={(e) => setPriority(e.target.value)} className="task-select">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <button type="submit" className="task-button">Add Task</button>
+            </form>
+
+            <h2>Task Board</h2>
+            <div className="filter-container mt-15">
+                {['All', 'Work', 'Study', 'Personal'].map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setFilter(cat)}
+                        className={`filter-btn ${filter === cat ? 'active' : ''}`}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            <ul className="task-list">
+                {filteredTasks.map(task => (
+                    <li
+                        key={task.id}
+                        className={`task-item ${task.priority === 'High' ? 'task-item-high' : 'task-item-medium'}`}
+                    >
+                        <div>
+                            <span>{task.title}</span>
+                            <span className="task-category-tag">{task.category}</span>
+                        </div>
+                        <span className="task-meta">Priority: {task.priority}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
