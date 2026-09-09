@@ -24,8 +24,10 @@ export default function AnalyticsPage() {
   // Duration parser helper
   const parseSeconds = (durationStr) => {
     let secs = 0;
+    const hourMatch = durationStr?.match(/(\d+)h/);
     const minMatch = durationStr?.match(/(\d+)m/);
     const secMatch = durationStr?.match(/(\d+)s/);
+    if (hourMatch) secs += parseInt(hourMatch[1], 10) * 3600;
     if (minMatch) secs += parseInt(minMatch[1], 10) * 60;
     if (secMatch) secs += parseInt(secMatch[1], 10);
     return secs;

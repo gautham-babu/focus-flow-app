@@ -34,8 +34,10 @@ export default function DashboardPage() {
 
     const totalSecondsToday = todaySessions.reduce((acc, s) => {
         let secs = 0;
+        const hourMatch = s.duration?.match(/(\d+)h/);
         const minMatch = s.duration?.match(/(\d+)m/);
         const secMatch = s.duration?.match(/(\d+)s/);
+        if (hourMatch) secs += parseInt(hourMatch[1], 10) * 3600;
         if (minMatch) secs += parseInt(minMatch[1], 10) * 60;
         if (secMatch) secs += parseInt(secMatch[1], 10);
         return acc + secs;

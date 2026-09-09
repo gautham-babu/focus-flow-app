@@ -92,11 +92,11 @@ export default function TasksPage() {
     };
 
     return (
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div className="tasks-page-container">
             {/* Create Task Form */}
-            <div className="ui-card" style={{ marginBottom: '24px' }}>
+            <div className="ui-card task-create-card">
                 <h2>Create Task</h2>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                <form onSubmit={handleSubmit} className="task-form-layout">
                     <input
                         type="text"
                         placeholder="What needs to be done?"
@@ -106,8 +106,8 @@ export default function TasksPage() {
                         required
                     />
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                    <div className="form-grid-2col">
+                        <div className="time-est-group">
                             <input
                                 type="number"
                                 min="1"
@@ -120,8 +120,7 @@ export default function TasksPage() {
                             <select
                                 value={timeUnit}
                                 onChange={(e) => setTimeUnit(e.target.value)}
-                                className="task-select"
-                                style={{ width: '90px' }}
+                                className="task-select time-unit-select"
                             >
                                 <option value="mins">mins</option>
                                 <option value="hours">hours</option>
@@ -132,11 +131,11 @@ export default function TasksPage() {
                             type="datetime-local"
                             value={startDateTime}
                             onChange={(e) => setStartDateTime(e.target.value)}
-                            className="task-input"
+                            className="task-input datetime-input"
                         />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div className="form-grid-2col">
                         <select
                             value={priority}
                             onChange={(e) => setPriority(e.target.value)}
@@ -159,22 +158,22 @@ export default function TasksPage() {
                         </select>
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ marginTop: '8px' }}>
+                    <button type="submit" className="btn-primary task-submit-btn">
                         Add Task
                     </button>
                 </form>
             </div>
 
             {/* Filter & Search Bar */}
-            <div className="ui-card" style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '1rem', color: '#475569', marginBottom: '12px' }}>Filter Tasks</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '10px' }}>
+            <div className="ui-card task-filter-card">
+                <h3 className="filter-card-title">Filter Tasks</h3>
+                <div className="task-filter-grid">
                     <input
                         type="text"
                         placeholder="Search tasks..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="task-input"
+                        className="task-input search-input"
                     />
 
                     <select
@@ -213,8 +212,8 @@ export default function TasksPage() {
             </div>
 
             {/* Task List */}
-            <div className="ui-card">
-                <h3 style={{ fontSize: '1.1rem', color: '#1e293b', marginBottom: '16px' }}>
+            <div className="ui-card task-list-card">
+                <h3 className="task-list-title">
                     Tasks ({filteredTasks.length})
                 </h3>
 
@@ -223,67 +222,52 @@ export default function TasksPage() {
                         No tasks match your filter.
                     </p>
                 ) : (
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    <ul className="task-items-list">
                         {filteredTasks.map((t) => (
                             <li
                                 key={t.id}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '14px',
-                                    padding: '12px 14px',
-                                    borderBottom: '1px solid #f1f5f9',
-                                    opacity: t.completed ? 0.6 : 1
-                                }}
+                                className={`task-item-card ${t.completed ? 'completed' : ''}`}
                             >
-                                {/* Complete Checkbox */}
-                                <input
-                                    type="checkbox"
-                                    checked={!!t.completed}
-                                    onChange={() => handleToggleComplete(t.id)}
-                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                                />
+                                <div className="task-item-left">
+                                    <input
+                                        type="checkbox"
+                                        checked={!!t.completed}
+                                        onChange={() => handleToggleComplete(t.id)}
+                                        className="task-checkbox"
+                                    />
 
-                                <div style={{ flex: 1 }}>
-                                    <strong style={{
-                                        fontSize: '1rem',
-                                        color: '#0f172a',
-                                        textDecoration: t.completed ? 'line-through' : 'none'
-                                    }}>
-                                        {t.title}
-                                    </strong>
+                                    <div className="task-item-content">
+                                        <strong className={`task-item-title ${t.completed ? 'completed' : ''}`}>
+                                            {t.title}
+                                        </strong>
 
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px', alignItems: 'center' }}>
-                                        <span style={{
-                                            backgroundColor: '#f1f5f9',
-                                            color: '#475569',
-                                            fontSize: '0.75rem',
-                                            padding: '2px 8px',
-                                            borderRadius: '4px'
-                                        }}>
-                                            📁 {t.category}
-                                        </span>
+                                        <div className="task-item-tags">
+                                            <span className="badge-category">
+                                                📁 {t.category}
+                                            </span>
 
-                                        <span style={{
-                                            backgroundColor: `${getPriorityColor(t.priority)}15`,
-                                            color: getPriorityColor(t.priority),
-                                            fontSize: '0.75rem',
-                                            padding: '2px 8px',
-                                            borderRadius: '4px',
-                                            fontWeight: '600'
-                                        }}>
-                                            {t.priority}
-                                        </span>
+                                            <span
+                                                className="badge-priority"
+                                                style={{
+                                                    backgroundColor: `${getPriorityColor(t.priority)}15`,
+                                                    color: getPriorityColor(t.priority)
+                                                }}
+                                            >
+                                                {t.priority}
+                                            </span>
 
-                                        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                                            ⏱ {t.estimated_time}
-                                        </span>
+                                            <span className="task-est-badge">
+                                                ⏱ {t.estimated_time}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                                    {t.start_date ? new Date(t.start_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : ''}
-                                </div>
+                                {t.start_date && (
+                                    <div className="task-item-date">
+                                        {new Date(t.start_date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                                    </div>
+                                )}
                             </li>
                         ))}
                     </ul>

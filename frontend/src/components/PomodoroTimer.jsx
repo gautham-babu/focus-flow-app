@@ -1,132 +1,30 @@
-import { useState, useEffect, useRef } from 'react';
+import { useTimer, formatDurationString } from '../context/TimerContext';
 
-const DEFAULT_POMODORO = 25 * 60; // 25 minutes
-
-export default function TimerPage() {
-  const [mode, setMode] = useState('pomodoro');
-  const [totalTime, setTotalTime] = useState(DEFAULT_POMODORO);
-  const [timeLeft, setTimeLeft] = useState(DEFAULT_POMODORO);
-  const [isActive, setIsActive] = useState(false);
-  const [customMinutes, setCustomMinutes] = useState(25);
-
-  // Session Reflection Modal
-  const [showModal, setShowModal] = useState(false);
-  const [rating, setRating] = useState(8);
-  const [distraction, setDistraction] = useState('None');
-  const [completedSeconds, setCompletedSeconds] = useState(0);
-
-  // Persistent History
-  const [sessions, setSessions] = useState([]);
-
-  const timerRef = useRef(null);
-
-  const fetchSessions = () => {
-    fetch('http://127.0.0.1:8000/sessions/')
-      .then((res) => res.json())
-      .then((data) => setSessions(Array.isArray(data) ? data : []))
-      .catch((err) => console.error('Error fetching sessions:', err));
-  };
-
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
-  // Timer Countdown Engine
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0 && isActive) {
-      handleSessionComplete();
-    }
-    return () => clearInterval(timerRef.current);
-  }, [isActive, timeLeft]);
-
-  const handleStart = () => {
-    setIsActive(true);
-  };
-
-  const handlePause = () => {
-    setIsActive(false);
-    clearInterval(timerRef.current);
-  };
-
-  const handleContinue = () => {
-    setIsActive(true);
-  };
-
-  const handleReset = () => {
-    setIsActive(false);
-    clearInterval(timerRef.current);
-    setTimeLeft(totalTime);
-  };
-
-  const handleModeSwitch = (newMode) => {
-    setIsActive(false);
-    clearInterval(timerRef.current);
-    setMode(newMode);
-    const parsedMins = parseInt(customMinutes, 10) || 25;
-    const secs = newMode === 'pomodoro' ? DEFAULT_POMODORO : parsedMins * 60;
-    setTotalTime(secs);
-    setTimeLeft(secs);
-  };
-
-  const handleCustomTimeChange = (mins) => {
-    setCustomMinutes(mins);
-
-    const parsed = parseInt(mins, 10);
-    if (!isNaN(parsed) && parsed > 0) {
-      if (mode === 'timer') {
-        setIsActive(false);
-        setTotalTime(parsed * 60);
-        setTimeLeft(parsed * 60);
-      }
-    }
-  };
-
-  const handleCustomTimeBlur = () => {
-    const parsed = parseInt(customMinutes, 10);
-    const fallback = !isNaN(parsed) && parsed > 0 ? parsed : 1;
-    setCustomMinutes(fallback);
-    if (mode === 'timer') {
-      setTotalTime(fallback * 60);
-      setTimeLeft(fallback * 60);
-    }
-  };
-
-  const handleSessionComplete = () => {
-    setIsActive(false);
-    clearInterval(timerRef.current);
-    const elapsed = totalTime - timeLeft || totalTime;
-    setCompletedSeconds(elapsed);
-    setShowModal(true);
-  };
-
-  const handleSaveSession = async (e) => {
-    e.preventDefault();
-    const durationText = `${Math.ceil(completedSeconds / 60)}m`;
-
-    try {
-      const res = await fetch('http://127.0.0.1:8000/sessions/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          duration: durationText,
-          rating: Number(rating),
-          distraction: distraction.trim() || 'None',
-        }),
-      });
-
-      if (res.ok) {
-        setShowModal(false);
-        handleReset();
-        fetchSessions();
-      }
-    } catch (err) {
-      console.error('Failed to save session:', err);
-    }
-  };
+export default function PomodoroTimer() {
+  const {
+    mode,
+    totalTime,
+    timeLeft,
+    isActive,
+    customMinutes,
+    showModal,
+    setShowModal,
+    completedSeconds,
+    rating,
+    setRating,
+    distraction,
+    setDistraction,
+    sessions,
+    handleStart,
+    handlePause,
+    handleContinue,
+    handleReset,
+    handleModeSwitch,
+    handleCustomTimeChange,
+    handleCustomTimeBlur,
+    handleEndSessionEarly,
+    handleSaveSession,
+  } = useTimer();
 
   // Circular Dial Progress calculation
   const radius = 100;
@@ -222,7 +120,7 @@ export default function TimerPage() {
               <button type="button" className="btn-amber-pause" onClick={handlePause}>
                 ⏸ Pause
               </button>
-              <button type="button" className="btn-red-end" onClick={handleSessionComplete}>
+              <button type="button" className="btn-red-end" onClick={handleEndSessionEarly}>
                 ⏹ End
               </button>
             </>
@@ -234,7 +132,7 @@ export default function TimerPage() {
               <button type="button" className="btn-lime-start" onClick={handleContinue}>
                 ▶ Continue
               </button>
-              <button type="button" className="btn-red-end" onClick={handleSessionComplete}>
+              <button type="button" className="btn-red-end" onClick={handleEndSessionEarly}>
                 ⏹ End
               </button>
             </>
@@ -259,8 +157,8 @@ export default function TimerPage() {
         ) : (
           <ul className="task-items-list">
             {sessions.map((s) => (
-              <li key={s.id} className="task-board-row">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <li key={s.id} className="task-board-row session-history-row">
+                <div className="session-history-left">
                   <span style={{ fontSize: '1.2rem' }}>⏱</span>
                   <div>
                     <div style={{ fontWeight: '600', fontSize: '0.95rem', color: '#0f172a' }}>
@@ -272,7 +170,7 @@ export default function TimerPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div className="session-history-right">
                   <span className="badge-category">Rating: {s.rating}/10</span>
                   <span
                     className={s.distraction === 'None' ? 'session-note-clean' : 'session-note-distracted'}
@@ -306,7 +204,7 @@ export default function TimerPage() {
           <div className="panel-card" style={{ width: '90%', maxWidth: '440px' }}>
             <h2 className="panel-title" style={{ marginBottom: '12px' }}>Session Reflection</h2>
             <p className="dashboard-subtitle" style={{ marginBottom: '16px' }}>
-              Logged ~{Math.ceil(completedSeconds / 60)} min session. How was your focus?
+              Logged {formatDurationString(completedSeconds)} focus session. How was your focus?
             </p>
 
             <form onSubmit={handleSaveSession} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
