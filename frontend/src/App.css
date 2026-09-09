@@ -588,11 +588,10 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 6px;
   border-radius: 6px;
-  font-size: 0.95rem;
-  opacity: 0.65;
-  transition: opacity 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+  color: #94a3b8;
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -600,9 +599,8 @@ body {
 }
 
 .task-delete-btn:hover {
-  opacity: 1;
+  color: #ef4444;
   background-color: #fee2e2;
-  transform: scale(1.08);
 }
 
 /* --- Pomodoro Timer Components (Legacy and Fallbacks) --- */
