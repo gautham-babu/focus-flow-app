@@ -17,15 +17,15 @@ export default function Navbar() {
         <span>Focus Flow</span>
       </div>
       <div className="navbar-links">
-        <NavLink 
-          to="/" 
+        <NavLink
+          to="/"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
           end
         >
           Dashboard
         </NavLink>
-        <NavLink 
-          to="/timer" 
+        <NavLink
+          to="/timer"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -37,14 +37,14 @@ export default function Navbar() {
             )}
           </span>
         </NavLink>
-        <NavLink 
-          to="/tasks" 
+        <NavLink
+          to="/tasks"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           Task Board
         </NavLink>
-        <NavLink 
-          to="/analytics" 
+        <NavLink
+          to="/analytics"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           Analytics

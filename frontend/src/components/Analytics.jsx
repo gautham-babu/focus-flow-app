@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
 
       {/* Breakdown Grid: Weekly Trends & Task/Distraction Insights */}
       <div className="analytics-details-grid">
-        
+
         {/* Past 7 Days Activity */}
         <div className="panel-card">
           <div className="panel-header">

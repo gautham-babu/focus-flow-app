@@ -13,7 +13,7 @@
   width: 100%;
 }
 
-/* --- Top Navbar --- */
+/* Top Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -93,7 +93,7 @@
   50% { opacity: 0.85; transform: scale(1.04); }
 }
 
-/* --- Shared Cards & Surfaces --- */
+/* Shared Cards & Surfaces */
 .ui-card,
 .panel-card,
 .kpi-card {
@@ -103,7 +103,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-/* --- Dashboard Overview --- */
+/* Dashboard Overview */
 .dashboard-container {
   max-width: 1040px;
   margin: 0 auto;
@@ -359,7 +359,7 @@
   font-size: 0.92rem;
 }
 
-/* --- Forms & Controls --- */
+/* Forms & Controls */
 .task-input,
 .task-select {
   padding: 9px 12px;
@@ -393,7 +393,7 @@
   background: #1d4ed8;
 }
 
-/* --- Tasks Page Responsive System --- */
+/* Tasks Page Responsive System */
 .tasks-page-container {
   max-width: 800px;
   margin: 0 auto;
@@ -585,7 +585,7 @@
   font-weight: 500;
 }
 
-/* --- Analytics Layout --- */
+/* Analytics Layout */
 .analytics-container {
   max-width: 1040px;
   margin: 0 auto;
@@ -690,7 +690,7 @@
   color: #15803d;
 }
 
-/* --- Circular Pomodoro & Timer Layout --- */
+/* Circular Pomodoro & Timer Layout */
 .timer-page-container {
   max-width: 600px;
   margin: 0 auto;
@@ -914,9 +914,7 @@
 
 
 
-/* ==========================================================================
-   RESPONSIVE MEDIA QUERIES (Mobile & Tablet)
-   ========================================================================== */
+/*RESPONSIVE MEDIA QUERIES (Mobile & Tablet)*/
 
 /* Tablet & Smaller (<= 768px) */
 @media (max-width: 768px) {

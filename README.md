@@ -6,12 +6,13 @@ Focus Flow is a full-stack productivity application designed to help users manag
 
 ## Key Features
 
-* **Advanced Timer System**: Features both a standard 25-minute Pomodoro timer and a highly customizable standard timer with dynamic SVG progress visualization.
-* **Persistent State**: The timer continues to run seamlessly in the background while navigating between different sections of the application.
+* **Advanced Timer System**: A fully custom-built, responsive circular Pomodoro timer.
+* **Persistent Global State**: Powered by React Context API (`TimerContext`), ensuring the timer continues to run seamlessly in the background while navigating between different pages of the application.
+* **Dashboard Overview**: A central hub providing an at-a-glance view of daily progress, current tasks, and recent session statistics.
+* **Task Management**: A dedicated Kanban-style task board to organize, track, filter, and complete daily objectives.
 * **Session Logging & Reflection**: Upon completing a focus session, users are prompted to log their focus rating (1–10) and note any distractions, providing actionable data for productivity tracking.
-* **Session History**: A detailed log of past focus sessions, including duration, date, ratings, and distraction notes.
-* **Task Management**: A dedicated task board to organize, track, filter, and complete daily objectives.
-* **Analytics**: Data visualization components tracking daily goals, session counts, peak focus hours, weekly volume, and overall focus time.
+* **Comprehensive Analytics**: Data visualization components tracking daily goals, session counts, peak focus hours, weekly volume, and overall focus time.
+* **Responsive Design**: Entirely custom-built CSS architecture utilizing CSS Variables and flex/grid layouts for a seamless experience on desktop, tablet, and mobile.
 
 ---
 
@@ -21,14 +22,15 @@ Focus Flow is a full-stack productivity application designed to help users manag
 * **Framework**: React 19
 * **Build Tool**: Vite
 * **Routing**: React Router DOM (`react-router-dom` v7)
-* **State Management**: React Context API
-* **Styling**: Pure CSS with responsive design principles and a custom minimalist color palette
+* **State Management**: React Context API (`TimerContext`)
+* **Styling**: Pure CSS with responsive design principles, custom variables, and micro-animations.
 
 ### Backend
 * **Framework**: Python / FastAPI
 * **Database**: SQLite with SQLAlchemy ORM
 * **Server**: Uvicorn
 * **Communication**: RESTful API endpoints for session and task management
+* **Data Validation**: Pydantic
 
 ---
 
@@ -89,7 +91,7 @@ Start the Vite development server:
 ```bash
 npm run dev
 ```
-The frontend application will run at `http://localhost:5173` (or the port specified in your Vite output).
+The frontend application will run at `http://localhost:5173`.
 
 ---
 
@@ -104,8 +106,9 @@ The frontend application will run at `http://localhost:5173` (or the port specif
 │   └── schemas.py            # Pydantic validation schemas
 └── frontend/
     ├── src/
-    │   ├── components/       # Reusable UI components (Navbar, PomodoroTimer, Analytics, etc.)
-    │   ├── pages/            # Application routes (DashboardPage, TimerPage, TasksPage, AnalyticsPage)
+    │   ├── components/       # UI components (Navbar, PomodoroTimer, Analytics, etc.)
+    │   ├── context/          # React Context (TimerContext.jsx for global timer state)
+    │   ├── pages/            # App routes (DashboardPage, TimerPage, TasksPage, AnalyticsPage)
     │   ├── App.jsx           # Main application wrapper and router
     │   ├── App.css           # Global stylesheet and custom UI styling
     │   ├── index.css         # Base resets and typography
@@ -136,6 +139,5 @@ The frontend application will run at `http://localhost:5173` (or the port specif
 
 ## Future Enhancements
 
-* **Real-time Synchronization**: Implementation of WebSockets to synchronize active timer states across multiple tabs and devices.
 * **Authentication**: User accounts to securely store personal task boards and long-term historical analytics.
 * **Audio Notifications & Ambient Sounds**: Gentle chimes upon session completion and optional background white noise / lo-fi audio tracks.
