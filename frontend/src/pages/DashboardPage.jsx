@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function DashboardPage({ onNavigate }) {
+export default function DashboardPage() {
     const [tasks, setTasks] = useState([]);
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,13 +21,17 @@ export default function DashboardPage({ onNavigate }) {
             });
     }, []);
 
-    // Filter sessions that took place today
+    // Format today's date (e.g., "Sep 9")
+    const todayFormatted = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+    });
+
     const todayStr = new Date().toDateString();
     const todaySessions = sessions.filter(
         (s) => new Date(s.created_at).toDateString() === todayStr
     );
 
-    // Parse duration strings (e.g., "25m 0s", "15s") to compute real focus seconds today
     const totalSecondsToday = todaySessions.reduce((acc, s) => {
         let secs = 0;
         const minMatch = s.duration?.match(/(\d+)m/);
@@ -45,85 +49,110 @@ export default function DashboardPage({ onNavigate }) {
         return `${totalSecs}s`;
     };
 
+    const completedTasksCount = tasks.filter((t) => t.completed).length;
+
     if (loading) {
-        return <div className="page-subtitle">Loading dashboard...</div>;
+        return <div className="empty-state">Loading dashboard metrics...</div>;
     }
 
     return (
-        <div>
-            <p className="page-subtitle">Here's your focus overview for today.</p>
-
-            {/* Real Metric Cards */}
-            <div className="quick-actions-flex" style={{ gap: '16px', marginTop: '16px' }}>
-                <div className="ui-card" style={{ flex: 1, textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Today's Focus</span>
-                    <h2 style={{ fontSize: '1.8rem', marginTop: '8px', color: '#0f172a' }}>
-                        {formatTotalTime(totalSecondsToday)}
-                    </h2>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+                <div>
+                    <h1 className="dashboard-title">Overview</h1>
+                    <p className="dashboard-subtitle">
+                        Here is your real-time focus activity and progress for today.
+                    </p>
                 </div>
-
-                <div className="ui-card" style={{ flex: 1, textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Completed Sessions</span>
-                    <h2 style={{ fontSize: '1.8rem', marginTop: '8px', color: '#0f172a' }}>
-                        {todaySessions.length}
-                    </h2>
-                </div>
-
-                <div className="ui-card" style={{ flex: 1, textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Total Tasks</span>
-                    <h2 style={{ fontSize: '1.8rem', marginTop: '8px', color: '#0f172a' }}>
-                        {tasks.length}
-                    </h2>
+                <div className="dashboard-date-badge">
+                    {todayFormatted}
                 </div>
             </div>
 
-            {/* Split Section: Recent Session & Actual Tasks */}
-            <div className="quick-actions-flex" style={{ gap: '20px', marginTop: '24px', alignItems: 'flex-start' }}>
+            <div className="kpi-grid">
+                <div className="kpi-card">
+                    <div className="kpi-label">Today's Focus</div>
+                    <div className="kpi-value">{formatTotalTime(totalSecondsToday)}</div>
+                    <div className="kpi-subtext highlight">● Active today</div>
+                </div>
 
-                {/* Latest Activity Card */}
-                <div className="ui-card" style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '1rem', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Latest Focus Session
-                    </h3>
+                <div className="kpi-card">
+                    <div className="kpi-label">Completed Sessions</div>
+                    <div className="kpi-value">{todaySessions.length}</div>
+                    <div className="kpi-subtext">{sessions.length} total logged</div>
+                </div>
+
+                <div className="kpi-card">
+                    <div className="kpi-label">Tasks Completed</div>
+                    <div className="kpi-value">
+                        {completedTasksCount} <span className="kpi-total-divider">/ {tasks.length}</span>
+                    </div>
+                    <div className="kpi-subtext">{tasks.length - completedTasksCount} pending</div>
+                </div>
+            </div>
+
+            <div className="dashboard-grid">
+                <div className="panel-card">
+                    <div className="panel-header">
+                        <h2 className="panel-title">Latest Focus Session</h2>
+                        <span className="badge-pill">Most Recent</span>
+                    </div>
+
                     {sessions.length === 0 ? (
-                        <p className="page-subtitle" style={{ marginTop: '16px' }}>No recorded sessions yet.</p>
+                        <div className="empty-state">No sessions completed yet. Start the timer to log one!</div>
                     ) : (
-                        <div style={{ marginTop: '16px' }}>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e05638' }}>
-                                ⏱ {sessions[0].duration}
+                        <div className="session-summary-box">
+                            <div className="session-main-stat">
+                                <span className="session-icon">⏱</span>
+                                <div>
+                                    <div className="session-duration">{sessions[0].duration}</div>
+                                    <div className="session-date">
+                                        {new Date(sessions[0].created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                                    </div>
+                                </div>
                             </div>
-                            <p className="task-meta" style={{ marginTop: '6px' }}>
-                                Rating: {sessions[0].rating}/10 | Distractions: {sessions[0].distraction}
-                            </p>
-                            <span className="task-meta">
-                                {new Date(sessions[0].created_at).toLocaleString([], {
-                                    dateStyle: 'short',
-                                    timeStyle: 'short'
-                                })}
-                            </span>
+
+                            <div className="session-meta-row top-border">
+                                <span className="session-meta-label">Productivity Rating:</span>
+                                <strong>{sessions[0].rating} / 10</strong>
+                            </div>
+
+                            <div className="session-meta-row">
+                                <span className="session-meta-label">Distraction Note:</span>
+                                <strong className={sessions[0].distraction === 'None' ? 'session-note-clean' : 'session-note-distracted'}>
+                                    {sessions[0].distraction || 'None'}
+                                </strong>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {/* Real Tasks from Database */}
-                <div className="ui-card" style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '1rem', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Current Tasks
-                    </h3>
+                <div className="panel-card">
+                    <div className="panel-header">
+                        <h2 className="panel-title">Active Tasks</h2>
+                        <span className="open-tasks-count">
+                            {tasks.filter((t) => !t.completed).length} open
+                        </span>
+                    </div>
+
                     {tasks.length === 0 ? (
-                        <p className="page-subtitle" style={{ marginTop: '16px' }}>No tasks created yet.</p>
+                        <div className="empty-state">No tasks created yet. Head to Task Board to add one.</div>
                     ) : (
-                        <ul className="task-list-simple" style={{ marginTop: '12px' }}>
+                        <ul className="task-items-list">
                             {tasks.slice(0, 5).map((t) => (
-                                <li key={t.id} className="clean-task-item" style={{ padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
-                                    <span>• {t.title}</span>
-                                    <span className="task-category-tag">{t.category}</span>
+                                <li key={t.id} className={`task-board-row ${t.completed ? 'completed' : ''}`}>
+                                    <div className="task-title-group">
+                                        <span className={`status-dot ${t.completed ? 'completed' : ''}`} />
+                                        <span className={`task-name ${t.completed ? 'completed' : ''}`}>
+                                            {t.title}
+                                        </span>
+                                    </div>
+                                    <span className="badge-category">{t.category || 'General'}</span>
                                 </li>
                             ))}
                         </ul>
                     )}
                 </div>
-
             </div>
         </div>
     );
