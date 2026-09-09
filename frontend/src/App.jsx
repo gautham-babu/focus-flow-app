@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PomodoroTimer from './components/PomodoroTimer';
+import SessionLogger from './components/SessionLogger';
 import './App.css';
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
       <p>A focused-work manager combining Pomodoro, task lists, and distraction logging.</p>
 
       <PomodoroTimer />
+      <SessionLogger />
 
       <form onSubmit={handleSubmit} className="task-form">
         <input

@@ -85,3 +85,44 @@
 .timer-btn.reset {
   background: #95a5a6;
 }
+
+.session-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.session-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.rating-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.session-submit-btn {
+  padding: 10px;
+}
+
+.logs-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.logs-title {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
