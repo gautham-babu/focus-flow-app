@@ -1,252 +1,356 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export default function PomodoroTimer() {
-    const [selectedMinutes, setSelectedMinutes] = useState('25');
-    const [timeLeft, setTimeLeft] = useState(25 * 60);
-    const [isActive, setIsActive] = useState(false);
-    const [hasSessionStarted, setHasSessionStarted] = useState(false);
+const DEFAULT_POMODORO = 25 * 60; // 25 minutes
 
-    const [showLogForm, setShowLogForm] = useState(false);
-    const [pendingDuration, setPendingDuration] = useState('');
+export default function TimerPage() {
+  const [mode, setMode] = useState('pomodoro');
+  const [totalTime, setTotalTime] = useState(DEFAULT_POMODORO);
+  const [timeLeft, setTimeLeft] = useState(DEFAULT_POMODORO);
+  const [isActive, setIsActive] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState(25);
 
-    const [distraction, setDistraction] = useState('');
-    const [rating, setRating] = useState(5);
+  // Session Reflection Modal
+  const [showModal, setShowModal] = useState(false);
+  const [rating, setRating] = useState(8);
+  const [distraction, setDistraction] = useState('None');
+  const [completedSeconds, setCompletedSeconds] = useState(0);
 
-    const [sessionHistory, setSessionHistory] = useState([]);
+  // Persistent History
+  const [sessions, setSessions] = useState([]);
 
-    useEffect(() => {
-        fetch('http://127.0.0.1:8000/sessions/')
-            .then((res) => res.json())
-            .then((data) => setSessionHistory(data))
-            .catch((err) => console.error("Error fetching sessions:", err));
-    }, []);
+  const timerRef = useRef(null);
 
-    const parsedMinutes = parseInt(selectedMinutes, 10);
-    const isValidDuration = !isNaN(parsedMinutes) && parsedMinutes >= 1;
-    const totalSessionSeconds = (isValidDuration ? parsedMinutes : 1) * 60;
+  const fetchSessions = () => {
+    fetch('http://127.0.0.1:8000/sessions/')
+      .then((res) => res.json())
+      .then((data) => setSessions(Array.isArray(data) ? data : []))
+      .catch((err) => console.error('Error fetching sessions:', err));
+  };
 
-    // Handle typing: allow raw input without modifying state behind the scenes
-    const handleMinutesChange = (e) => {
-        const val = e.target.value;
-        setSelectedMinutes(val);
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
-        const parsed = parseInt(val, 10);
-        if (!isNaN(parsed) && parsed >= 1) {
-            setTimeLeft(parsed * 60);
-        } else {
-            setTimeLeft(0);
-        }
-    };
+  // Timer Countdown Engine
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isActive) {
+      handleSessionComplete();
+    }
+    return () => clearInterval(timerRef.current);
+  }, [isActive, timeLeft]);
 
-    const formatDurationText = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-    };
+  const handleStart = () => {
+    setIsActive(true);
+  };
 
-    // Countdown timer
-    useEffect(() => {
-        let interval = null;
-        if (isActive && timeLeft > 0) {
-            interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-        } else if (isActive && timeLeft === 0) {
-            setIsActive(false);
-            setHasSessionStarted(false);
-            setPendingDuration(formatDurationText(totalSessionSeconds));
-            setShowLogForm(true);
-        }
-        return () => clearInterval(interval);
-    }, [isActive, timeLeft, totalSessionSeconds]);
+  const handlePause = () => {
+    setIsActive(false);
+    clearInterval(timerRef.current);
+  };
 
-    const handleStartResume = () => {
-        if (!hasSessionStarted && !isValidDuration) {
-            return;
-        }
-        setHasSessionStarted(true);
-        setIsActive(true);
-    };
+  const handleContinue = () => {
+    setIsActive(true);
+  };
 
-    const handlePause = () => {
+  const handleReset = () => {
+    setIsActive(false);
+    clearInterval(timerRef.current);
+    setTimeLeft(totalTime);
+  };
+
+  const handleModeSwitch = (newMode) => {
+    setIsActive(false);
+    clearInterval(timerRef.current);
+    setMode(newMode);
+    const parsedMins = parseInt(customMinutes, 10) || 25;
+    const secs = newMode === 'pomodoro' ? DEFAULT_POMODORO : parsedMins * 60;
+    setTotalTime(secs);
+    setTimeLeft(secs);
+  };
+
+  const handleCustomTimeChange = (mins) => {
+    setCustomMinutes(mins);
+
+    const parsed = parseInt(mins, 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      if (mode === 'timer') {
         setIsActive(false);
-    };
+        setTotalTime(parsed * 60);
+        setTimeLeft(parsed * 60);
+      }
+    }
+  };
 
-    const handleStop = () => {
-        const elapsedSeconds = totalSessionSeconds - timeLeft;
-        setIsActive(false);
-        setHasSessionStarted(false);
+  const handleCustomTimeBlur = () => {
+    const parsed = parseInt(customMinutes, 10);
+    const fallback = !isNaN(parsed) && parsed > 0 ? parsed : 1;
+    setCustomMinutes(fallback);
+    if (mode === 'timer') {
+      setTotalTime(fallback * 60);
+      setTimeLeft(fallback * 60);
+    }
+  };
 
-        if (elapsedSeconds > 0) {
-            setPendingDuration(formatDurationText(elapsedSeconds));
-            setShowLogForm(true);
-        } else {
-            setTimeLeft(totalSessionSeconds);
-        }
-    };
+  const handleSessionComplete = () => {
+    setIsActive(false);
+    clearInterval(timerRef.current);
+    const elapsed = totalTime - timeLeft || totalTime;
+    setCompletedSeconds(elapsed);
+    setShowModal(true);
+  };
 
-    const handleReset = () => {
-        setIsActive(false);
-        setHasSessionStarted(false);
-        setShowLogForm(false);
-        if (isValidDuration) {
-            setTimeLeft(parsedMinutes * 60);
-        } else {
-            setSelectedMinutes('25');
-            setTimeLeft(25 * 60);
-        }
-    };
+  const handleSaveSession = async (e) => {
+    e.preventDefault();
+    const durationText = `${Math.ceil(completedSeconds / 60)}m`;
 
-    const handleLogSubmit = async (e) => {
-        e.preventDefault();
+    try {
+      const res = await fetch('http://127.0.0.1:8000/sessions/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          duration: durationText,
+          rating: Number(rating),
+          distraction: distraction.trim() || 'None',
+        }),
+      });
 
-        const payload = {
-            duration: pendingDuration,
-            distraction: distraction.trim() || "None",
-            rating: parseInt(rating, 10)
-        };
+      if (res.ok) {
+        setShowModal(false);
+        handleReset();
+        fetchSessions();
+      }
+    } catch (err) {
+      console.error('Failed to save session:', err);
+    }
+  };
 
-        try {
-            const res = await fetch('http://127.0.0.1:8000/sessions/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const newSession = await res.json();
+  // Circular Dial Progress calculation
+  const radius = 100;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - timeLeft / totalTime);
 
-            setSessionHistory((prev) => [newSession, ...prev]);
+  // Format MM:SS
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, '0');
+    const s = (secs % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
-            setShowLogForm(false);
-            setDistraction('');
-            setRating(5);
-            const parsed = parseInt(selectedMinutes, 10) || 25;
-            setTimeLeft(parsed * 60);
-        } catch (err) {
-            console.error("Error saving session log:", err);
-        }
-    };
+  return (
+    <div className="timer-page-container">
+      {/* 1. Pomodoro Timer Box */}
+      <div className="circular-timer-card">
 
-    const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    };
-
-    const timerButtonLabel = isActive ? 'Pause' : hasSessionStarted ? 'Resume' : 'Start';
-    const isStartDisabled = !hasSessionStarted && !isValidDuration;
-
-    return (
-        <div className="ui-card timer-card">
-            <h2>Pomodoro Timer</h2>
-
-            {!hasSessionStarted && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', marginTop: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <label style={{ fontSize: '0.95rem', color: '#64748b' }}>Duration (mins):</label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="180"
-                            value={selectedMinutes}
-                            onChange={handleMinutesChange}
-                            placeholder="e.g. 25"
-                            style={{
-                                width: '85px',
-                                padding: '6px 10px',
-                                textAlign: 'center',
-                                borderRadius: '6px',
-                                border: !isValidDuration ? '1px solid #ef4444' : '1px solid #cbd5e1',
-                                fontSize: '1rem',
-                                outline: 'none'
-                            }}
-                        />
-                    </div>
-                    {!isValidDuration && (
-                        <span style={{ fontSize: '0.8rem', color: '#ef4444' }}>
-                            Enter at least 1 minute to start
-                        </span>
-                    )}
-                </div>
-            )}
-
-            <div className="timer-display">{formatTime(timeLeft)}</div>
-
-            <div className="timer-buttons">
-                <button
-                    className={`timer-btn ${isActive ? 'pause' : 'start'}`}
-                    onClick={isActive ? handlePause : handleStartResume}
-                    disabled={isStartDisabled}
-                    style={{
-                        opacity: isStartDisabled ? 0.5 : 1,
-                        cursor: isStartDisabled ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    {timerButtonLabel}
-                </button>
-
-                {hasSessionStarted && (
-                    <>
-                        <button className="timer-btn stop" onClick={handleStop}>Stop</button>
-                        <button className="timer-btn reset" onClick={handleReset}>Reset</button>
-                    </>
-                )}
-            </div>
-
-            {/* Log Session Form */}
-            {showLogForm && (
-                <div className="history-container">
-                    <h3>Log Completed Session ({pendingDuration})</h3>
-                    <form onSubmit={handleLogSubmit} className="session-form mt-15">
-                        <input
-                            type="text"
-                            placeholder="Any distractions? (e.g., checked phone, email)"
-                            value={distraction}
-                            onChange={(e) => setDistraction(e.target.value)}
-                            className="task-input"
-                        />
-                        <div className="rating-row">
-                            <label className="rating-label">Productivity Rating (1-10):</label>
-                            <select
-                                value={rating}
-                                onChange={(e) => setRating(e.target.value)}
-                                className="task-select"
-                            >
-                                {[...Array(10)].map((_, i) => (
-                                    <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <button type="submit" className="btn-primary mt-15">Save Session Log</button>
-                    </form>
-                </div>
-            )}
-
-            {/* Session History */}
-            <div className="history-container">
-                <h3 className="logs-title">Session History</h3>
-                {sessionHistory.length === 0 ? (
-                    <p className="page-subtitle" style={{ textAlign: 'center', marginTop: '10px' }}>
-                        No sessions completed yet.
-                    </p>
-                ) : (
-                    <ul className="task-list mt-15">
-                        {sessionHistory.map((s) => (
-                            <li key={s.id} className="clean-task-item">
-                                <div>
-                                    <strong>⏱ {s.duration} Focus Session</strong>
-                                    <div className="task-meta">
-                                        Distractions: {s.distraction} | Rating: {s.rating}/10
-                                    </div>
-                                </div>
-                                <span className="task-meta">
-                                    {new Date(s.created_at).toLocaleString([], {
-                                        dateStyle: 'short',
-                                        timeStyle: 'short'
-                                    })}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+        {/* Switcher Pill */}
+        <div className="timer-mode-switcher">
+          <button
+            type="button"
+            className={`mode-btn ${mode === 'pomodoro' ? 'active' : ''}`}
+            onClick={() => handleModeSwitch('pomodoro')}
+          >
+            ⏱ Pomodoro
+          </button>
+          <button
+            type="button"
+            className={`mode-btn ${mode === 'timer' ? 'active' : ''}`}
+            onClick={() => handleModeSwitch('timer')}
+          >
+            ⏲ Timer
+          </button>
         </div>
-    );
+
+        {mode === 'timer' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Duration:</span>
+            <input
+              type="number"
+              min="1"
+              max="120"
+              value={customMinutes}
+              onChange={(e) => handleCustomTimeChange(e.target.value)}
+              onBlur={handleCustomTimeBlur}
+              className="task-input"
+              style={{ width: '80px', padding: '4px 8px' }}
+            />
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>minutes</span>
+          </div>
+        )}
+
+        {/* Circular Dial Display */}
+        <div className="timer-dial-wrapper">
+          <svg className="dial-svg" viewBox="0 0 240 240">
+            <circle
+              className="dial-track"
+              cx="120"
+              cy="120"
+              r={radius}
+            />
+            <circle
+              className="dial-progress"
+              cx="120"
+              cy="120"
+              r={radius}
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+            />
+          </svg>
+
+          <div className="dial-content">
+            <div className="dial-time-text">{formatTime(timeLeft)}</div>
+            <div className="dial-status-text">
+              {isActive ? 'FOCUSING' : timeLeft === totalTime ? 'READY TO FOCUS' : 'PAUSED'}
+            </div>
+          </div>
+        </div>
+
+        {/* Controls: Start / Pause / Continue / End / Reset */}
+        <div className="timer-action-group">
+          {/* IDLE: Not started yet */}
+          {!isActive && timeLeft === totalTime && (
+            <button type="button" className="btn-lime-start" onClick={handleStart}>
+              ▶ Start
+            </button>
+          )}
+
+          {/* RUNNING: Active ticking */}
+          {isActive && (
+            <>
+              <button type="button" className="btn-amber-pause" onClick={handlePause}>
+                ⏸ Pause
+              </button>
+              <button type="button" className="btn-red-end" onClick={handleSessionComplete}>
+                ⏹ End
+              </button>
+            </>
+          )}
+
+          {/* PAUSED: In-progress but stopped */}
+          {!isActive && timeLeft < totalTime && timeLeft > 0 && (
+            <>
+              <button type="button" className="btn-lime-start" onClick={handleContinue}>
+                ▶ Continue
+              </button>
+              <button type="button" className="btn-red-end" onClick={handleSessionComplete}>
+                ⏹ End
+              </button>
+            </>
+          )}
+
+          {/* Reset Action */}
+          <button type="button" className="btn-reset-round" onClick={handleReset} title="Reset Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Separate Session History Box */}
+      <div className="panel-card">
+        <div className="panel-header">
+          <h2 className="panel-title">Session History</h2>
+          <span className="badge-pill">{sessions.length} Logged</span>
+        </div>
+
+        {sessions.length === 0 ? (
+          <div className="empty-state">No focus sessions completed yet.</div>
+        ) : (
+          <ul className="task-items-list">
+            {sessions.map((s) => (
+              <li key={s.id} className="task-board-row">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>⏱</span>
+                  <div>
+                    <div style={{ fontWeight: '600', fontSize: '0.95rem', color: '#0f172a' }}>
+                      {s.duration} focus
+                    </div>
+                    <div className="session-date">
+                      {new Date(s.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <span className="badge-category">Rating: {s.rating}/10</span>
+                  <span
+                    className={s.distraction === 'None' ? 'session-note-clean' : 'session-note-distracted'}
+                    style={{ fontSize: '0.8rem' }}
+                  >
+                    {s.distraction === 'None' ? 'No distractions' : s.distraction}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Session Reflection Modal */}
+      {showModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div className="panel-card" style={{ width: '90%', maxWidth: '440px' }}>
+            <h2 className="panel-title" style={{ marginBottom: '12px' }}>Session Reflection</h2>
+            <p className="dashboard-subtitle" style={{ marginBottom: '16px' }}>
+              Logged ~{Math.ceil(completedSeconds / 60)} min session. How was your focus?
+            </p>
+
+            <form onSubmit={handleSaveSession} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label className="rating-label">Focus Rating (1 - 10): {rating}</label>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  style={{ width: '100%', marginTop: '6px' }}
+                />
+              </div>
+
+              <div>
+                <label className="rating-label">Any distractions?</label>
+                <input
+                  type="text"
+                  placeholder="e.g. phone, noisy room, None"
+                  value={distraction}
+                  onChange={(e) => setDistraction(e.target.value)}
+                  className="task-input"
+                  style={{ width: '100%', marginTop: '6px' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1 }}>
+                  Save Session
+                </button>
+                <button
+                  type="button"
+                  className="btn-reset-round"
+                  style={{ borderRadius: '6px', width: 'auto', padding: '0 16px' }}
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

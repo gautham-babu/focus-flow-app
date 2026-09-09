@@ -6,7 +6,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f1f5f9; /* Darker than pure white navbar */
+  background-color: #f1f5f9;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
 }
@@ -75,6 +75,7 @@ body {
   background-color: transparent;
   text-shadow: 0 1px 3px rgba(22, 101, 52, 0.25);
 }
+
 /* --- Shared Cards & Surfaces --- */
 .ui-card,
 .timer-card,
@@ -96,6 +97,9 @@ body {
 }
 
 .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 28px;
 }
 
@@ -111,6 +115,20 @@ body {
   color: #64748b;
   font-size: 0.95rem;
   margin: 0;
+}
+
+.dashboard-date-badge {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* KPI Summary Cards */
@@ -139,6 +157,12 @@ body {
   color: #0f172a;
   margin-top: 8px;
   line-height: 1.1;
+}
+
+.kpi-total-divider {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  font-weight: 400;
 }
 
 .kpi-subtext {
@@ -177,6 +201,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
+}
+
+.open-tasks-count {
+  font-size: 0.82rem;
+  color: #64748b;
 }
 
 /* Badges & Tags */
@@ -242,6 +271,20 @@ body {
   margin-top: 16px;
   padding-top: 14px;
   border-top: 1px solid #e2e8f0;
+}
+
+.session-meta-label {
+  color: #64748b;
+}
+
+.session-note-clean {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.session-note-distracted {
+  color: #e11d48;
+  font-weight: 500;
 }
 
 /* Task Board & Items */
@@ -345,7 +388,7 @@ body {
   background: #1d4ed8;
 }
 
-/* --- Pomodoro Timer Components --- */
+/* --- Pomodoro Timer Components (Legacy and Fallbacks) --- */
 .timer-card {
   padding: 32px 24px;
   text-align: center;
@@ -443,11 +486,39 @@ body {
   margin-bottom: 30px;
 }
 
-.analytics-grid {
+.analytics-container {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.analytics-header {
+  margin-bottom: 24px;
+}
+
+.analytics-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.analytics-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.analytics-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.analytics-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .stat-box {
@@ -487,92 +558,6 @@ body {
 .task-meta {
   font-size: 0.82rem;
   color: #64748b;
-}
-
-/* Utilities */
-.mt-15 { margin-top: 15px; }
-.mt-30 { margin-top: 30px; }
-
-/* --- Additional Dashboard Elements --- */
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.dashboard-date-badge {
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: #0f172a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.kpi-total-divider {
-  font-size: 1.2rem;
-  color: #94a3b8;
-  font-weight: 400;
-}
-
-.open-tasks-count {
-  font-size: 0.82rem;
-  color: #64748b;
-}
-
-.session-meta-label {
-  color: #64748b;
-}
-
-.session-note-clean {
-  color: #10b981;
-  font-weight: 500;
-}
-
-.session-note-distracted {
-  color: #e11d48;
-  font-weight: 500;
-}
-
-/* --- Analytics Page Specifics --- */
-.analytics-container {
-  max-width: 1040px;
-  margin: 0 auto;
-}
-
-.analytics-header {
-  margin-bottom: 24px;
-}
-
-.analytics-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 6px 0;
-}
-
-.analytics-subtitle {
-  color: #64748b;
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.analytics-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.analytics-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
 }
 
 /* Weekly Breakdown Bar Layout */
@@ -643,3 +628,204 @@ body {
   border-color: #dcfce7;
   color: #15803d;
 }
+
+/* --- Circular Pomodoro & Timer Layout --- */
+.timer-page-container {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.circular-timer-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Mode Switcher Pill */
+.timer-mode-switcher {
+  display: inline-flex;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.mode-btn.active {
+  background-color: #18181b;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Circular Timer Ring */
+.timer-dial-wrapper {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.dial-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.dial-track {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 8;
+}
+
+.dial-progress {
+  fill: none;
+  stroke: #2e5a27;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.dial-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.dial-time-text {
+  font-size: 3.25rem;
+  font-weight: 800;
+  color: #1e3a1e;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.dial-status-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+/* Bottom Controls */
+.timer-action-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-lime-start {
+  background-color: #d9f99d;
+  color: #1a2e05;
+  border: 1px solid #bef264;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 12px 36px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.btn-lime-start:hover {
+  background-color: #bef264;
+}
+
+.btn-lime-start:active {
+  transform: scale(0.98);
+}
+
+.btn-amber-pause {
+  background-color: #f59e0b;
+  color: #ffffff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-amber-pause:hover {
+  opacity: 0.92;
+}
+
+.btn-red-end {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-red-end:hover {
+  opacity: 0.92;
+}
+
+.btn-reset-round {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.15s ease;
+}
+
+.btn-reset-round:hover {
+  background-color: #f1f5f9;
+}
+
+/* Utilities */
+.mt-15 { margin-top: 15px; }
+.mt-30 { margin-top: 30px; }
